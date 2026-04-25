@@ -1,0 +1,90 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { BASE_URL } from "../../constants/url";
+
+const getToken = (state) => state.auth.token;
+
+export const fetchGroups = createAsyncThunk(
+  "groups/fetchAll",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/groups`, {
+        headers: { Authorization: `Bearer ${getToken(getState())}` },
+      });
+      return data.groups;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch groups",
+      );
+    }
+  },
+);
+
+export const fetchIdolsByGroup = createAsyncThunk(
+  "groups/fetchByGroup",
+  async (groupId, { getState, rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(
+        `${BASE_URL}/idols/by-group/${groupId}`,
+        {
+          headers: { Authorization: `Bearer ${getToken(getState())}` },
+        },
+      );
+      return data; // { members, others }
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch idols by group",
+      );
+    }
+  },
+);
+
+export const fetchAllForLog = createAsyncThunk(
+  "groups/fetchAllForLog",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/idols/all-for-log`, {
+        headers: { Authorization: `Bearer ${getToken(getState())}` },
+      });
+      return data.idols;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch idols for log",
+      );
+    }
+  },
+);
+
+const groupsSlice = createSlice({
+  name: "groups",
+  initialState: {
+    groups: [],
+    byGroup: { members: [], others: [] },
+    allForLog: [],
+    loading: false,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchGroups.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchGroups.fulfilled, (state, action) => {
+        state.loading = false;
+        state.groups = action.payload;
+      })
+      .addCase(fetchGroups.rejected, (state) => {
+        state.loading = false;
+      });
+
+    builder.addCase(fetchIdolsByGroup.fulfilled, (state, action) => {
+      state.byGroup = action.payload;
+    });
+
+    builder.addCase(fetchAllForLog.fulfilled, (state, action) => {
+      state.allForLog = action.payload;
+    });
+  },
+});
+
+export default groupsSlice.reducer;
