@@ -21,6 +21,25 @@ export const fetchEntriesByIdol = createAsyncThunk(
   },
 );
 
+export const submitEntry = createAsyncThunk(
+  "entries/submit",
+  async (body, { getState, rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`${BASE_URL}/entries`, body, {
+        headers: {
+          Authorization: `Bearer ${getToken(getState())}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return data.entry;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to submit entry",
+      );
+    }
+  },
+);
+
 export const deleteEntry = createAsyncThunk(
   "entries/delete",
   async (entryId, { getState, rejectWithValue }) => {
@@ -60,6 +79,19 @@ const entriesSlice = createSlice({
         state.entries = action.payload;
       })
       .addCase(fetchEntriesByIdol.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(submitEntry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitEntry.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(submitEntry.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -5,6 +5,8 @@ import { fetchIdols } from "../features/idols/idolsSlice";
 import { fetchProfile } from "../features/auth/authSlice";
 import IdolCard from "../components/IdolCard";
 import GroupSection from "../components/GroupSection";
+import SkeletonCard from "../components/SkeletonCard";
+import "../index.css";
 
 const SORT_OPTIONS = [
   { value: "createdAt", label: "Last added" },
@@ -15,8 +17,8 @@ const SORT_OPTIONS = [
 export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { idols, loading, error } = useSelector((state) => state.idols);
-  const user = useSelector((state) => state.auth.user);
+  const { idols, loading, error } = useSelector((s) => s.idols);
+  const user = useSelector((s) => s.auth.user);
   const [sort, setSort] = useState("createdAt");
 
   useEffect(() => {
@@ -24,7 +26,6 @@ export default function HomePage() {
     dispatch(fetchIdols(sort === "group" ? "createdAt" : sort));
   }, [sort]);
 
-  // Group by group name for "By group" sort
   const grouped = () => {
     const map = {};
     idols.forEach((idol) => {
@@ -47,7 +48,9 @@ export default function HomePage() {
             {user ? `Hey, ${user.username}` : "Your Idols"}
           </h1>
           <p className="home-subtitle">
-            {idols.length} idol{idols.length !== 1 ? "s" : ""} tracked
+            {loading
+              ? "Loading…"
+              : `${idols.length} idol${idols.length !== 1 ? "s" : ""} tracked`}
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => navigate("/log")}>
@@ -60,7 +63,7 @@ export default function HomePage() {
           {SORT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
-              className={`type-tab ${sort === opt.value ? "active" : ""}`}
+              className={`type-tab${sort === opt.value ? " active" : ""}`}
               onClick={() => setSort(opt.value)}
             >
               {opt.label}
@@ -69,19 +72,47 @@ export default function HomePage() {
         </div>
       </div>
 
-      {loading && <p className="page-loading">Loading...</p>}
-      {error && <p className="page-error">{error}</p>}
+      {/* Error */}
+      {error && (
+        <div className="state-error">
+          <span className="state-error-icon">⚠</span>
+          <p>{error}</p>
+          <button
+            className="btn btn-secondary"
+            onClick={() =>
+              dispatch(fetchIdols(sort === "group" ? "createdAt" : sort))
+            }
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
+      {/* Loading — skeleton grid */}
+      {loading && !error && (
+        <div className="idol-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      )}
+
+      {/* Empty */}
       {!loading && !error && idols.length === 0 && (
-        <div className="home-empty">
-          <p>No idols yet.</p>
+        <div className="state-empty">
+          <div className="state-empty-icon">✦</div>
+          <p className="state-empty-title">No idols yet</p>
+          <p className="state-empty-sub">
+            Log your first entry and your idols will appear here.
+          </p>
           <button className="btn btn-primary" onClick={() => navigate("/log")}>
             Log your first entry
           </button>
         </div>
       )}
 
-      {!loading && idols.length > 0 && sort !== "group" && (
+      {/* Flat grid */}
+      {!loading && !error && idols.length > 0 && sort !== "group" && (
         <div className="idol-grid">
           {idols.map((idol) => (
             <IdolCard key={idol.id} idol={idol} />
@@ -89,7 +120,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {!loading && idols.length > 0 && sort === "group" && (
+      {/* Grouped */}
+      {!loading && !error && idols.length > 0 && sort === "group" && (
         <div className="group-sections">
           {grouped().map(([groupName, groupIdols]) => (
             <GroupSection

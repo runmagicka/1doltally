@@ -12,6 +12,8 @@ import {
   clearEntries,
 } from "../features/entries/entriesSlice";
 import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
+import "../index.css";
 
 const capitalizeFull = (str) =>
   str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
@@ -32,48 +34,67 @@ const formatDateTime = (iso) =>
     minute: "2-digit",
   });
 
-// Compute stats from entries for a specific idol
 function computeStats(entries, idolId) {
   if (!entries.length) return null;
-
   const sorted = [...entries].sort(
     (a, b) => new Date(a.loggedAt) - new Date(b.loggedAt),
   );
-
-  // Thought tag frequency (only tags where this idol is included)
   const thoughtCount = {};
   entries.forEach((e) => {
     e.EntryThoughts?.forEach((t) => {
-      const included = t.idolIds?.includes(idolId) || t.idolIds?.length === 0; // empty = all
-      if (included) {
-        thoughtCount[t.tag] = (thoughtCount[t.tag] || 0) + 1;
-      }
+      const included = t.idolIds?.includes(idolId) || t.idolIds?.length === 0;
+      if (included) thoughtCount[t.tag] = (thoughtCount[t.tag] || 0) + 1;
     });
   });
-
-  // Medium tag frequency
   const mediumCount = {};
   entries.forEach((e) => {
     e.mediumTags?.forEach((m) => {
       mediumCount[m] = (mediumCount[m] || 0) + 1;
     });
   });
-
-  const topThoughts = Object.entries(thoughtCount)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 3);
-
-  const topMediums = Object.entries(mediumCount)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 3);
-
   return {
     firstEntry: sorted[0].loggedAt,
     lastEntry: sorted[sorted.length - 1].loggedAt,
     totalCount: entries.length,
-    topThoughts,
-    topMediums,
+    topThoughts: Object.entries(thoughtCount)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3),
+    topMediums: Object.entries(mediumCount)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3),
   };
+}
+
+function HeroSkeleton() {
+  return (
+    <div className="idol-hero skeleton-hero" aria-hidden="true">
+      <div
+        className="idol-hero-photo-wrap skeleton-box"
+        style={{ borderRadius: "var(--r-xl)" }}
+      />
+      <div className="idol-hero-info">
+        <div
+          className="skeleton-line"
+          style={{ width: "50%", height: 28, marginBottom: 8 }}
+        />
+        <div className="skeleton-line" style={{ width: "30%" }} />
+        <div className="idol-stats-grid" style={{ marginTop: 20 }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="idol-stat">
+              <div
+                className="skeleton-line"
+                style={{ width: "60%", height: 22 }}
+              />
+              <div
+                className="skeleton-line"
+                style={{ width: "80%", marginTop: 4 }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function IdolPage() {
@@ -85,6 +106,7 @@ export default function IdolPage() {
   const { idolDetail, loading: idolLoading } = useSelector((s) => s.idols);
   const { entries, loading: entriesLoading } = useSelector((s) => s.entries);
   const [deletingId, setDeletingId] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchIdolDetail(id));
@@ -98,12 +120,12 @@ export default function IdolPage() {
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPhotoUploading(true);
     const result = await dispatch(updateIdolPhoto({ id, file }));
-    if (updateIdolPhoto.fulfilled.match(result)) {
+    setPhotoUploading(false);
+    if (updateIdolPhoto.fulfilled.match(result))
       toast.success("Photo updated!");
-    } else {
-      toast.error(result.payload);
-    }
+    else toast.error(result.payload);
   };
 
   const handleDelete = async (entryId) => {
@@ -113,15 +135,42 @@ export default function IdolPage() {
     setDeletingId(null);
     if (deleteEntry.fulfilled.match(result)) {
       toast.success("Entry deleted");
-      // Refresh idol to update entryCount
       dispatch(fetchIdolDetail(id));
     } else {
       toast.error(result.payload);
     }
   };
 
-  if (idolLoading) return <p className="page-loading">Loading...</p>;
-  if (!idolDetail) return <p className="page-error">Idol not found.</p>;
+  if (idolLoading) {
+    return (
+      <div className="idol-page">
+        <button
+          className="btn btn-ghost idol-back-btn"
+          onClick={() => navigate(-1)}
+        >
+          ← Back
+        </button>
+        <HeroSkeleton />
+      </div>
+    );
+  }
+
+  if (!idolDetail) {
+    return (
+      <div className="idol-page">
+        <button
+          className="btn btn-ghost idol-back-btn"
+          onClick={() => navigate(-1)}
+        >
+          ← Back
+        </button>
+        <div className="state-error">
+          <span className="state-error-icon">⚠</span>
+          <p>Idol not found.</p>
+        </div>
+      </div>
+    );
+  }
 
   const stats = computeStats(entries, Number(id));
   const displayName = capitalizeFull(idolDetail.name);
@@ -131,7 +180,6 @@ export default function IdolPage() {
 
   return (
     <div className="idol-page">
-      {/* Back */}
       <button
         className="btn btn-ghost idol-back-btn"
         onClick={() => navigate(-1)}
@@ -156,15 +204,16 @@ export default function IdolPage() {
           <button
             className="idol-photo-edit-btn"
             onClick={() => photoInputRef.current?.click()}
+            disabled={photoUploading}
             title="Change photo"
           >
-            ✎
+            {photoUploading ? <Spinner size={14} /> : "✎"}
           </button>
           <input
             ref={photoInputRef}
             type="file"
             accept="image/*"
-            style={{ display: "none" }}
+            hidden
             onChange={handlePhotoChange}
           />
         </div>
@@ -223,7 +272,15 @@ export default function IdolPage() {
           )}
 
           {!stats && !entriesLoading && (
-            <p className="idol-no-entries">No entries yet for this idol.</p>
+            <div className="idol-no-entries-cta">
+              <p>No entries yet for {displayName}.</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate("/log")}
+              >
+                Log an entry
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -237,10 +294,32 @@ export default function IdolPage() {
           )}
         </h2>
 
-        {entriesLoading && <p className="page-loading">Loading entries...</p>}
+        {entriesLoading && (
+          <div className="entries-skeleton">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="entry-card skeleton-entry"
+                aria-hidden="true"
+              >
+                <div className="skeleton-line" style={{ width: "40%" }} />
+                <div
+                  className="skeleton-line"
+                  style={{ width: "70%", marginTop: 8 }}
+                />
+                <div
+                  className="skeleton-line"
+                  style={{ width: "55%", marginTop: 6 }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {!entriesLoading && entries.length === 0 && (
-          <p className="page-empty">No entries yet.</p>
+          <div className="state-empty state-empty--inline">
+            <p className="state-empty-sub">No entries logged yet.</p>
+          </div>
         )}
 
         <div className="idol-history-list">
@@ -253,11 +332,11 @@ export default function IdolPage() {
                     {formatDateTime(entry.loggedAt)}
                   </span>
                   <button
-                    className="btn btn-danger entry-delete-btn"
+                    className="entry-delete-btn"
                     onClick={() => handleDelete(entry.id)}
                     disabled={deletingId === entry.id}
                   >
-                    {deletingId === entry.id ? "..." : "Delete"}
+                    {deletingId === entry.id ? <Spinner size={13} /> : "Delete"}
                   </button>
                 </div>
 

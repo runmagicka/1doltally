@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { fetchProfile, updateAvatar } from "../features/auth/authSlice";
 import { fetchStats } from "../features/stats/statsSlice";
 import { toast } from "react-toastify";
+import "../index.css";
 
 const capitalizeFull = (str) =>
   str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
@@ -84,6 +86,8 @@ export default function StatsPage() {
   const { user } = useSelector((s) => s.auth);
   const { data, loading, error } = useSelector((s) => s.stats);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!user) dispatch(fetchProfile());
     dispatch(fetchStats());
@@ -137,11 +141,74 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {loading && <p className="page-loading">Loading stats...</p>}
-      {error && <p className="page-error">{error}</p>}
+      {loading && (
+        <div className="stats-skeleton">
+          <div className="stats-overview-grid">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="stats-card">
+                <div
+                  className="skeleton-line"
+                  style={{ width: "55%", height: 28, marginBottom: 8 }}
+                />
+                <div className="skeleton-line" style={{ width: "80%" }} />
+              </div>
+            ))}
+          </div>
+          <div className="stats-section" style={{ marginTop: 24 }}>
+            <div
+              className="skeleton-line"
+              style={{ width: 180, marginBottom: 16 }}
+            />
+            <div
+              className="skeleton-box"
+              style={{ height: 60, borderRadius: "var(--r-md)" }}
+            />
+          </div>
+          <div className="stats-section">
+            <div
+              className="skeleton-line"
+              style={{ width: 120, marginBottom: 16 }}
+            />
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bar-row" style={{ marginBottom: 10 }}>
+                <div
+                  className="skeleton-line"
+                  style={{ width: 100, flexShrink: 0 }}
+                />
+                <div
+                  className="skeleton-box"
+                  style={{ flex: 1, height: 6, borderRadius: 4 }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {!loading && !data && (
-        <p className="page-empty">No entries yet. Start logging!</p>
+      {error && (
+        <div className="state-error">
+          <span className="state-error-icon">⚠</span>
+          <p>{error}</p>
+          <button
+            className="btn btn-secondary"
+            onClick={() => dispatch(fetchStats())}
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && !data && (
+        <div className="state-empty">
+          <div className="state-empty-icon">◎</div>
+          <p className="state-empty-title">No data yet</p>
+          <p className="state-empty-sub">
+            Start logging entries and your stats will show up here.
+          </p>
+          <button className="btn btn-primary" onClick={() => navigate("/log")}>
+            Log your first entry
+          </button>
+        </div>
       )}
 
       {data && (

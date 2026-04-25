@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
+import "../index.css";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
