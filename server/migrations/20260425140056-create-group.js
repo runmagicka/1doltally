@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Idols", {
+    await queryInterface.createTable("Groups", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -36,8 +36,13 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
+    await queryInterface.addConstraint("Groups", {
+      fields: ["userId", "name"],
+      type: "unique",
+      name: "unique_group_name_per_user",
+    });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Idols");
+    await queryInterface.dropTable("Groups");
   },
 };

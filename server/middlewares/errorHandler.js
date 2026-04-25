@@ -12,6 +12,7 @@ const errorHandler = (err, req, res, next) => {
       res.status(400).json({ message: err.message });
       break;
     case "JsonWebTokenError":
+    case "TokenExpiredError":
       res.status(401).json({ message: "Invalid Token" });
       break;
     case "Unauthorized":

@@ -36,6 +36,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Group",
+      hooks: {
+        beforeValidate(group) {
+          if (group.name) {
+            group.name = group.name.trim().toLowerCase();
+          }
+        },
+      },
     },
   );
 
