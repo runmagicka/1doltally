@@ -144,10 +144,27 @@ export default function LogPage() {
         return;
       }
 
+      const resolvedThoughts = thoughts.map((thought) => {
+        if (thought.idolIds === "all" || !Array.isArray(thought.idolIds))
+          return thought;
+        const resolvedIds = thought.idolIds
+          .map((key) => {
+            if (typeof key === "number") return key;
+            const itemId = String(key).replace("new:", "");
+            const sel = resolvedSelectors.find((s) => s.id === itemId);
+            return sel?.selectedIdol?.id ?? null;
+          })
+          .filter((id) => id !== null);
+        return {
+          ...thought,
+          idolIds: resolvedIds.length > 0 ? resolvedIds : "all",
+        };
+      });
+
       const body = {
         loggedAt: new Date(loggedAt).toISOString(),
         idols: entryIdols,
-        thoughts,
+        thoughts: resolvedThoughts,
         mediumTags,
         notes: notes.trim() || null,
       };
@@ -177,7 +194,7 @@ export default function LogPage() {
     <div className="log-page">
       <div className="log-header">
         <h1 className="log-title">New Log</h1>
-        <p className="log-subtitle">Record who you were thinking about</p>
+        <p className="log-subtitle">Record who did you goon to</p>
       </div>
 
       <div className="log-body">
@@ -202,7 +219,7 @@ export default function LogPage() {
         {/* ── Right: Tags + Notes + Submit ── */}
         <div className="log-right">
           <section className="log-section">
-            <div className="log-section-label">Thoughts</div>
+            <div className="log-section-label">Where did you cum?</div>
             <ThoughtSelect
               thoughts={thoughts}
               onChange={setThoughts}
@@ -211,7 +228,7 @@ export default function LogPage() {
           </section>
 
           <section className="log-section">
-            <div className="log-section-label">Medium</div>
+            <div className="log-section-label">What did you use?</div>
             <MediumSelect selected={mediumTags} onChange={setMediumTags} />
           </section>
 

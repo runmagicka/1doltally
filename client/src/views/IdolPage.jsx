@@ -339,11 +339,18 @@ export default function IdolPage() {
                   </button>
                 </div>
 
-                {entry.EntryThoughts?.length > 0 && (
+                {entry.EntryThoughts?.filter(
+                  (t) =>
+                    t.idolIds?.includes(Number(id)) || t.idolIds?.length === 0,
+                ).length > 0 && (
                   <div className="entry-card-row">
                     <span className="entry-card-row-label">Thought about</span>
                     <div className="idol-tags">
-                      {entry.EntryThoughts.map((t) => (
+                      {entry.EntryThoughts.filter(
+                        (t) =>
+                          t.idolIds?.includes(Number(id)) ||
+                          t.idolIds?.length === 0,
+                      ).map((t) => (
                         <span key={t.id} className="idol-tag">
                           {t.tag}
                         </span>

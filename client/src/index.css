@@ -568,6 +568,9 @@ body::before {
   color: var(--text-muted);
   font-size: 14px;
 }
+.fab-add-log {
+  display: none;
+}
 
 /* ═══════════════════════════════════════════════════════════
    IDOL GRID & CARD
@@ -1891,6 +1894,13 @@ body::before {
     grid-template-columns: 1fr 1fr;
   }
 }
+.idol-grid {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+.home-title {
+  font-size: 22px;
+}
 
 /* ═══════════════════════════════════════════════════════════
    RESPONSIVE — MOBILE  (≤ 480px)
@@ -1950,7 +1960,43 @@ body::before {
     justify-content: center;
   }
 }
+.home-header .btn-primary {
+  display: none;
+}
 
+/* Show FAB */
+.fab-add-log {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 28px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 300;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 4px 16px rgba(99, 102, 241, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  transition:
+    transform var(--t-base),
+    background var(--t-base);
+  z-index: 90;
+  line-height: 1;
+}
+.fab-add-log:hover {
+  background: var(--primary-hover);
+  transform: scale(1.06);
+}
+.fab-add-log:active {
+  transform: scale(0.96);
+}
 /* ═══════════════════════════════════════════════════════════
    RESPONSIVE — IDOL PAGE  (≤ 640px)
 ═══════════════════════════════════════════════════════════ */

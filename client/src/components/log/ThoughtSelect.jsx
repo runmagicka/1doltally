@@ -86,28 +86,17 @@ export default function ThoughtSelect({ thoughts, onChange, idolItems }) {
           {count === 2 ? "Both of them" : `All ${count} of them`}
         </button>
         {selectedIdols.map((idol) => {
+          const idolKey = idol.id !== null ? idol.id : `new:${idol.itemId}`;
           const active =
             !isAll &&
             Array.isArray(thought.idolIds) &&
-            thought.idolIds.includes(idol.id);
+            thought.idolIds.includes(idolKey);
           return (
             <button
               key={idol.itemId}
               type="button"
               className={`thought-idol-option${active ? " --active" : ""}`}
-              onClick={() => {
-                if (idol.id === null) {
-                  // new idol — use "all" or skip
-                  setIdolIds(tag, "all");
-                  return;
-                }
-                if (active) {
-                  // Deselect — go back to all
-                  setIdolIds(tag, "all");
-                } else {
-                  setIdolIds(tag, [idol.id]);
-                }
-              }}
+              onClick={() => setIdolIds(tag, [idolKey])}
             >
               {cf(idol.name)}
             </button>

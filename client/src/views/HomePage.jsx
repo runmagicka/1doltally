@@ -131,6 +131,13 @@ export default function HomePage() {
           ))}
         </div>
       )}
+      <button
+        className="fab-add-log"
+        onClick={() => navigate("/log")}
+        aria-label="Add log"
+      >
+        +
+      </button>
     </div>
   );
 }

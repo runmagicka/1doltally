@@ -5,12 +5,16 @@ import { BASE_URL } from "../../constants/url";
 const getToken = (state) => state.auth.token;
 
 export const DEFAULT_THOUGHTS = [
-  "Her face",
-  "Her voice",
-  "Her personality",
-  "Her style",
-  "Her performance",
-  "Her laugh",
+  "Face",
+  "In mouth",
+  "Tits",
+  "Inside pussy",
+  "Inside ass",
+  "On pussy",
+  "On ass",
+  "Stomach",
+  "Back",
+  "Pits",
 ];
 
 export const DEFAULT_MEDIUMS = [
