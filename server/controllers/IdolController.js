@@ -3,6 +3,27 @@ const cloudinary = require("cloudinary").v2;
 const { Op, literal } = require("sequelize");
 
 class IdolController {
+  static async getOne(req, res, next) {
+    try {
+      const idol = await Idol.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          {
+            model: Group,
+            attributes: ["id", "name"],
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      if (!idol) throw { name: "NotFound", message: "Idol not found" };
+
+      res.status(200).json({ idol });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getAll(req, res, next) {
     try {
       const { sort = "createdAt" } = req.query;
@@ -59,6 +80,13 @@ class IdolController {
 
       const members = await Idol.findAll({
         where: { userId: req.user.id, id: memberIds },
+        include: [
+          {
+            model: Group,
+            attributes: ["id", "name"],
+            through: { attributes: [] },
+          },
+        ],
         attributes: ["id", "name", "photoUrl"],
       });
 
@@ -71,6 +99,13 @@ class IdolController {
           userId: req.user.id,
           id: { [Op.notIn]: memberIds.length ? memberIds : [0] },
         },
+        include: [
+          {
+            model: Group,
+            attributes: ["id", "name"],
+            through: { attributes: [] },
+          },
+        ],
         attributes: ["id", "name", "photoUrl"],
         order: [["name", "ASC"]],
       });

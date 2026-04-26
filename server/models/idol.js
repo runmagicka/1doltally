@@ -42,13 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Idol",
-      hooks: {
-        beforeValidate(idol) {
-          if (idol.name) {
-            idol.name = idol.name.trim().toLowerCase();
-          }
-        },
-      },
     },
   );
 

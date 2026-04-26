@@ -6,6 +6,7 @@ router.get("/by-group/:groupId", IdolController.byGroup);
 router.get("/all-for-log", IdolController.allForLog);
 
 router.get("/", IdolController.getAll);
+router.get("/:id", IdolController.getOne);
 router.post("/", upload.single("photo"), IdolController.create);
 router.patch("/:id", upload.single("photo"), IdolController.update);
 router.post("/:id/groups", IdolController.addToGroup);
