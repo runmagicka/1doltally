@@ -39,17 +39,17 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-        <div className="navbar-user">
-          {user?.avatarUrl ? (
+        {/* <div className="navbar-user">
+          {user?.avatar ? (
             <img
-              src={user.avatarUrl}
+              src={user.avatar}
               alt={user.username}
               className="navbar-avatar"
             />
           ) : (
             <span className="navbar-avatar-placeholder">{initial}</span>
           )}
-        </div>
+        </div> */}
 
         <button className="btn btn-ghost" onClick={handleLogout}>
           Logout

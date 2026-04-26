@@ -13,7 +13,6 @@ import {
 } from "../features/entries/entriesSlice";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
-import "../index.css";
 
 const capitalizeFull = (str) =>
   str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";

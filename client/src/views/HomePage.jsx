@@ -6,7 +6,6 @@ import { fetchProfile } from "../features/auth/authSlice";
 import IdolCard from "../components/IdolCard";
 import GroupSection from "../components/GroupSection";
 import SkeletonCard from "../components/SkeletonCard";
-import "../index.css";
 
 const SORT_OPTIONS = [
   { value: "createdAt", label: "Last added" },

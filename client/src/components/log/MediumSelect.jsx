@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { DEFAULT_MEDIUMS } from "../../features/options/optionsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addOption,
+  DEFAULT_MEDIUMS,
+} from "../../features/options/optionsSlice";
 
 export default function MediumSelect({ selected, onChange }) {
   // selected: string[]
+  const dispatch = useDispatch();
   const customOptions = useSelector((s) => s.options.mediumOptions);
   const customLabels = customOptions.map((o) => o.label);
 
@@ -24,12 +28,15 @@ export default function MediumSelect({ selected, onChange }) {
     }
   };
 
-  const handleAddCustom = () => {
+  const handleAddCustom = async () => {
     const val = customInput.trim();
     if (!val || allOptions.includes(val)) return;
-    onChange([...selected, val]);
     setCustomInput("");
     setAddingCustom(false);
+    // Persist to DB first — Redux state updates via addOption.fulfilled
+    await dispatch(addOption({ category: "medium", label: val }));
+    // Then select it
+    onChange([...selected, val]);
   };
 
   return (

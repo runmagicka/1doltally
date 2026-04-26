@@ -13,7 +13,6 @@ import IdolSelectorList, {
 import LogPreview from "../components/log/LogPreview";
 import ThoughtSelect from "../components/log/ThoughtSelect";
 import MediumSelect from "../components/log/MediumSelect";
-import "../index.css";
 
 const toLocalDatetimeValue = (d = new Date()) => {
   // Returns "YYYY-MM-DDTHH:MM" for datetime-local input
@@ -58,21 +57,42 @@ export default function LogPage() {
 
     const headers = { Authorization: `Bearer ${token}` };
 
+    const missingGroup = idolSelectors.some(
+      (it) => !it.selectedGroup && !it.isNewGroup,
+    );
+    if (missingGroup) {
+      toast.error("Please select or create a group for each idol");
+      return;
+    }
     try {
       // ── Step 1: Create new groups ──────────────────────────────────────────
       const resolvedSelectors = [...idolSelectors];
+      const newGroupMap = {}; // key: name lowercase → created group object
 
       for (let i = 0; i < resolvedSelectors.length; i++) {
         const it = resolvedSelectors[i];
         if (!it.isNewGroup) continue;
 
+        const nameKey = it.newGroupName.toLowerCase();
+
+        if (newGroupMap[nameKey]) {
+          // Grup dengan nama ini sudah dibuat di iterasi sebelumnya — reuse
+          resolvedSelectors[i] = {
+            ...it,
+            isNewGroup: false,
+            selectedGroup: newGroupMap[nameKey],
+          };
+          continue;
+        }
+
         const fd = new FormData();
-        fd.append("name", it.newGroupName.toLowerCase());
+        fd.append("name", it.newGroupName);
         if (it.groupPhotoFile) fd.append("photo", it.groupPhotoFile);
 
         const { data } = await axios.post(`${BASE_URL}/groups`, fd, {
           headers,
         });
+        newGroupMap[nameKey] = data.group;
         resolvedSelectors[i] = {
           ...it,
           isNewGroup: false,
@@ -86,7 +106,7 @@ export default function LogPage() {
         if (!it.isNewIdol) continue;
 
         const fd = new FormData();
-        fd.append("name", it.newIdolName.toLowerCase());
+        fd.append("name", it.newIdolName.trim());
         if (it.selectedGroup?.id) fd.append("groupId", it.selectedGroup.id);
         if (it.idolPhotoFile) fd.append("photo", it.idolPhotoFile);
 

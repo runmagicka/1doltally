@@ -49,7 +49,7 @@ export default function GroupSelect({ value, onChange, onNewGroup }) {
       <div className="log-select-input-row">
         <input
           className="log-input"
-          placeholder="Group (optional)"
+          placeholder="Group"
           value={query}
           onChange={handleInput}
           onFocus={() => setOpen(true)}

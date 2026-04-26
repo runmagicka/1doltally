@@ -110,7 +110,7 @@ body::before {
   z-index: -1;
   background-image:
     linear-gradient(rgba(11, 17, 32, 0.55), rgba(11, 17, 32, 0.9)),
-    url("./assets/hero.png");
+    url("./assets/parabolic-ellipse.svg");
   background-size: cover;
   background-position: center top;
   filter: blur(var(--blur-sm));
@@ -357,14 +357,16 @@ body::before {
 .idol-card,
 .entry-card,
 .stats-card,
-.selector-pair,
-.log-preview,
 .group-section {
   background: var(--surface-glass) !important;
   backdrop-filter: blur(var(--blur-md));
   -webkit-backdrop-filter: blur(var(--blur-md));
 }
 
+.selector-pair,
+.log-preview {
+  background: var(--surface-glass) !important;
+}
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
 ═══════════════════════════════════════════════════════════ */
@@ -1961,4 +1963,37 @@ body::before {
   .idol-stats-grid {
     grid-template-columns: 1fr 1fr;
   }
+}
+.selector-list {
+  position: relative;
+  z-index: 20;
+  overflow: visible;
+}
+
+.selector-pair {
+  overflow: visible;
+}
+
+.selector-pair-selects {
+  overflow: visible;
+}
+
+/* GroupSelect (first) harus lebih tinggi dari IdolSelect (second) */
+.selector-pair-selects .log-select-wrap:first-child {
+  z-index: 20;
+}
+.selector-pair-selects .log-select-wrap:last-child {
+  z-index: 10;
+}
+
+.log-select-wrap {
+  position: relative;
+}
+
+.log-dropdown {
+  z-index: 100;
+}
+
+.log-left {
+  overflow: visible;
 }

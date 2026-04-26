@@ -122,13 +122,15 @@ const authSlice = createSlice({
 
     // Fetch Profile
     builder.addCase(fetchProfile.fulfilled, (state, action) => {
-      state.user = action.payload;
+      // Server returns { user: { id, username, email, avatar } }
+      state.user = action.payload.user;
     });
 
     // Update Avatar
     builder.addCase(updateAvatar.fulfilled, (state, action) => {
+      // Server returns { avatar: url }
       if (state.user) {
-        state.user.avatarUrl = action.payload.avatarUrl;
+        state.user.avatar = action.payload.avatar;
       }
     });
   },

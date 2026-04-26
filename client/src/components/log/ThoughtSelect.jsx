@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { DEFAULT_THOUGHTS } from "../../features/options/optionsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addOption,
+  DEFAULT_THOUGHTS,
+} from "../../features/options/optionsSlice";
 
 const cf = (str) => str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
 
 export default function ThoughtSelect({ thoughts, onChange, idolItems }) {
   // thoughts: [{ tag: string, idolIds: number[] | "all" }]
   // idolItems: array of selector items (to get selected idols for sub-select)
+  const dispatch = useDispatch();
   const customOptions = useSelector((s) => s.options.thoughtOptions);
   const customLabels = customOptions.map((o) => o.label);
 
@@ -53,12 +57,15 @@ export default function ThoughtSelect({ thoughts, onChange, idolItems }) {
     onChange(thoughts.map((t) => (t.tag === tag ? { ...t, idolIds } : t)));
   };
 
-  const handleAddCustom = () => {
+  const handleAddCustom = async () => {
     const val = customInput.trim();
     if (!val || allOptions.includes(val)) return;
-    toggleTag(val);
     setCustomInput("");
     setAddingCustom(false);
+    // Persist to DB first — Redux state updates via addOption.fulfilled
+    await dispatch(addOption({ category: "thought", label: val }));
+    // Then toggle it as selected
+    toggleTag(val);
   };
 
   const renderIdolPicker = (tag) => {

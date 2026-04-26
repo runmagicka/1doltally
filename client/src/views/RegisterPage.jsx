@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
-import "../index.css";
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -47,7 +46,7 @@ export default function RegisterPage() {
               name="username"
               value={form.username}
               onChange={handleChange}
-              placeholder="runmagicka"
+              placeholder="username"
               required
             />
           </label>

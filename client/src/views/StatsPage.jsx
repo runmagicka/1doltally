@@ -4,18 +4,9 @@ import { useNavigate } from "react-router";
 import { fetchProfile, updateAvatar } from "../features/auth/authSlice";
 import { fetchStats } from "../features/stats/statsSlice";
 import { toast } from "react-toastify";
-import "../index.css";
 
 const capitalizeFull = (str) =>
   str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
-
-const formatMonth = (ym) => {
-  const [y, m] = ym.split("-");
-  return new Date(y, m - 1).toLocaleString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-};
 
 // Simple heatmap: last 365 days
 function Heatmap({ data }) {
@@ -111,9 +102,9 @@ export default function StatsPage() {
       {/* Profile header */}
       <div className="stats-profile">
         <div className="stats-avatar-wrap">
-          {user?.avatarUrl ? (
+          {user?.avatar ? (
             <img
-              src={user.avatarUrl}
+              src={user.avatar}
               alt={user.username}
               className="stats-avatar"
             />
