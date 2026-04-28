@@ -20,22 +20,24 @@ class GroupController {
 
       const memberIds = group.Idols.map((i) => i.id);
 
-      const totalEntries = memberIds.length
-        ? await EntryIdol.count({
-            where: { idolId: { [Op.in]: memberIds } },
-          })
-        : 0;
-
+      let totalEntries = 0;
       let topIdol = null;
+      const memberCounts = {}; // idolId -> count
+
       if (memberIds.length) {
         const counts = await EntryIdol.findAll({
           where: { idolId: { [Op.in]: memberIds } },
           attributes: ["idolId", [fn("COUNT", col("idolId")), "count"]],
           group: ["idolId"],
           order: [[literal("count"), "DESC"]],
-          limit: 1,
           raw: true,
         });
+
+        counts.forEach((c) => {
+          memberCounts[c.idolId] = Number(c.count);
+          totalEntries += Number(c.count);
+        });
+
         if (counts.length) {
           const topIdolData = group.Idols.find(
             (i) => i.id === counts[0].idolId,
@@ -46,9 +48,10 @@ class GroupController {
         }
       }
 
-      res
-        .status(200)
-        .json({ group: group.toJSON(), stats: { totalEntries, topIdol } });
+      res.status(200).json({
+        group: group.toJSON(),
+        stats: { totalEntries, topIdol, memberCounts },
+      });
     } catch (error) {
       next(error);
     }

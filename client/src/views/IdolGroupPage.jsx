@@ -8,27 +8,10 @@ import {
 } from "../features/groups/groupsSlice";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
+import IdolCard from "../components/IdolCard";
 
 const capitalizeFull = (str) =>
   str?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
-
-function MemberChip({ idol }) {
-  const navigate = useNavigate();
-  const initial = capitalizeFull(idol.name).charAt(0);
-  return (
-    <button
-      className="member-chip"
-      onClick={() => navigate(`/idol/${idol.id}`)}
-    >
-      {idol.photoUrl ? (
-        <img src={idol.photoUrl} alt={idol.name} className="member-chip-img" />
-      ) : (
-        <span className="member-chip-initial">{initial}</span>
-      )}
-      <span className="member-chip-name">{capitalizeFull(idol.name)}</span>
-    </button>
-  );
-}
 
 export default function IdolGroupPage() {
   const { id } = useParams();
@@ -52,20 +35,30 @@ export default function IdolGroupPage() {
     setPhotoUploading(true);
     const result = await dispatch(updateGroupPhoto({ id, file }));
     setPhotoUploading(false);
-    if (updateGroupPhoto.fulfilled.match(result)) toast.success("Logo updated!");
+    if (updateGroupPhoto.fulfilled.match(result))
+      toast.success("Logo updated!");
     else toast.error(result.payload);
   };
 
   if (detailLoading) {
     return (
       <div className="idol-page">
-        <button className="btn btn-ghost idol-back-btn" onClick={() => navigate(-1)}>
+        <button
+          className="btn btn-ghost idol-back-btn"
+          onClick={() => navigate(-1)}
+        >
           ← Back
         </button>
         <div className="idol-hero skeleton-hero" aria-hidden="true">
-          <div className="idol-hero-photo-wrap skeleton-box" style={{ borderRadius: "50%" }} />
+          <div
+            className="idol-hero-photo-wrap skeleton-box"
+            style={{ borderRadius: "50%", width: 200, height: 200 }}
+          />
           <div className="idol-hero-info">
-            <div className="skeleton-line" style={{ width: "40%", height: 28, marginBottom: 8 }} />
+            <div
+              className="skeleton-line"
+              style={{ width: "40%", height: 28, marginBottom: 8 }}
+            />
             <div className="skeleton-line" style={{ width: "25%" }} />
           </div>
         </div>
@@ -76,7 +69,10 @@ export default function IdolGroupPage() {
   if (!groupDetail) {
     return (
       <div className="idol-page">
-        <button className="btn btn-ghost idol-back-btn" onClick={() => navigate(-1)}>
+        <button
+          className="btn btn-ghost idol-back-btn"
+          onClick={() => navigate(-1)}
+        >
           ← Back
         </button>
         <div className="state-error">
@@ -94,9 +90,19 @@ export default function IdolGroupPage() {
     ? capitalizeFull(groupStats.topIdol.name)
     : null;
 
+  // Map each member with their individual entry count from memberCounts
+  const memberIdols = members.map((m) => ({
+    ...m,
+    Groups: [groupDetail],
+    entryCount: groupStats?.memberCounts?.[m.id] ?? 0,
+  }));
+
   return (
     <div className="idol-page">
-      <button className="btn btn-ghost idol-back-btn" onClick={() => navigate(-1)}>
+      <button
+        className="btn btn-ghost idol-back-btn"
+        onClick={() => navigate(-1)}
+      >
         ← Back
       </button>
 
@@ -174,11 +180,11 @@ export default function IdolGroupPage() {
             <p className="state-empty-sub">No members in this group yet.</p>
           </div>
         ) : (
-          <div className="members-chip-grid">
-            {[...members]
+          <div className="idol-grid">
+            {[...memberIdols]
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((idol) => (
-                <MemberChip key={idol.id} idol={idol} />
+                <IdolCard key={idol.id} idol={idol} />
               ))}
           </div>
         )}
