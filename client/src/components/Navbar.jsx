@@ -53,6 +53,14 @@ export default function Navbar() {
           >
             Stats
           </NavLink>
+          <NavLink
+            to="/add"
+            className={({ isActive }) =>
+              "nav-link" + (isActive ? " active" : "")
+            }
+          >
+            Add
+          </NavLink>
         </div>
 
         <button className="btn btn-ghost" onClick={handleLogout}>

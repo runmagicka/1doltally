@@ -10,6 +10,7 @@ import StatsPage from "./views/StatsPage";
 import IdolsPage from "./views/IdolsPage";
 import GroupsPage from "./views/GroupsPage";
 import IdolGroupPage from "./views/IdolGroupPage";
+import AddGroupIdolPage from "./views/AddGroupIdolPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/group/:id" element={<IdolGroupPage />} />
         <Route path="/idol/:id" element={<IdolPage />} />
         <Route path="/log" element={<LogPage />} />
+        <Route path="/add" element={<AddGroupIdolPage />} />
         <Route path="/stats" element={<StatsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />

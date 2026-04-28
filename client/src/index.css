@@ -1477,6 +1477,167 @@ body::before {
   border-color: var(--accent);
 }
 
+/* ── Add Group / Idol page ─────────────────────────────────────────────────── */
+.aig-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.aig-container {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.aig-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aig-idol-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aig-idol-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aig-idol-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aig-idol-input-row .log-select-wrap {
+  flex: 1;
+}
+
+/* ── Aig Preview (right panel) ── */
+.aig-preview {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  transition: border-color var(--t-base);
+}
+.aig-preview--empty {
+  min-height: 200px;
+  justify-content: center;
+  color: var(--text-faint);
+  font-size: 13px;
+  gap: 8px;
+}
+.aig-preview-empty-icon {
+  font-size: 24px;
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+/* Group header */
+.aig-preview-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.aig-preview-group-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 2px solid var(--border-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.aig-preview-group-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.aig-preview-group-initial {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+.aig-preview-group-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+/* Idol card grid */
+.aig-preview-idols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+.aig-preview-idol-card {
+  width: calc(33.333% - 7px);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.aig-preview-idol-photo {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.aig-preview-idol-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.aig-preview-idol-initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+.aig-preview-idol-info {
+  padding: 8px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.aig-preview-idol-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
 /* Log preview */
 .log-preview {
   border: 1px solid var(--border);
