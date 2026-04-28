@@ -30,6 +30,22 @@ export default function Navbar() {
             Home
           </NavLink>
           <NavLink
+            to="/idols"
+            className={({ isActive }) =>
+              "nav-link" + (isActive ? " active" : "")
+            }
+          >
+            Idols
+          </NavLink>
+          <NavLink
+            to="/groups"
+            className={({ isActive }) =>
+              "nav-link" + (isActive ? " active" : "")
+            }
+          >
+            Groups
+          </NavLink>
+          <NavLink
             to="/stats"
             className={({ isActive }) =>
               "nav-link" + (isActive ? " active" : "")
@@ -38,18 +54,6 @@ export default function Navbar() {
             Stats
           </NavLink>
         </div>
-
-        {/* <div className="navbar-user">
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              alt={user.username}
-              className="navbar-avatar"
-            />
-          ) : (
-            <span className="navbar-avatar-placeholder">{initial}</span>
-          )}
-        </div> */}
 
         <button className="btn btn-ghost" onClick={handleLogout}>
           Logout

@@ -2,28 +2,23 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { fetchIdols } from "../features/idols/idolsSlice";
-import { fetchProfile } from "../features/auth/authSlice";
 import IdolCard from "../components/IdolCard";
 import SkeletonCard from "../components/SkeletonCard";
 
-export default function HomePage() {
+export default function IdolsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { idols, loading, error } = useSelector((s) => s.idols);
-  const user = useSelector((s) => s.auth.user);
 
   useEffect(() => {
-    if (!user) dispatch(fetchProfile());
-    dispatch(fetchIdols("createdAt"));
+    dispatch(fetchIdols("name"));
   }, []);
 
   return (
     <div className="home-page">
       <div className="home-header">
         <div className="home-header-left">
-          <h1 className="home-title">
-            {user ? `Hey, ${user.username}` : "Your Idols"}
-          </h1>
+          <h1 className="home-title">All Idols</h1>
           <p className="home-subtitle">
             {loading
               ? "Loading…"
@@ -35,15 +30,13 @@ export default function HomePage() {
         </button>
       </div>
 
-      <p className="home-section-label">Recently logged</p>
-
       {error && (
         <div className="state-error">
           <span className="state-error-icon">⚠</span>
           <p>{error}</p>
           <button
             className="btn btn-secondary"
-            onClick={() => dispatch(fetchIdols("createdAt"))}
+            onClick={() => dispatch(fetchIdols("name"))}
           >
             Try again
           </button>
@@ -78,14 +71,6 @@ export default function HomePage() {
           ))}
         </div>
       )}
-
-      <button
-        className="fab-add-log"
-        onClick={() => navigate("/log")}
-        aria-label="Add log"
-      >
-        +
-      </button>
     </div>
   );
 }

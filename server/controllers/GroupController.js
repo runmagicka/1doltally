@@ -1,7 +1,59 @@
-const { Group, Idol } = require("../models");
+const { Group, Idol, EntryIdol } = require("../models");
+const { Op, fn, col, literal } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
 
 class GroupController {
+  static async getOne(req, res, next) {
+    try {
+      const group = await Group.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          {
+            model: Idol,
+            attributes: ["id", "name", "photoUrl"],
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      if (!group) throw { name: "NotFound", message: "Group not found" };
+
+      const memberIds = group.Idols.map((i) => i.id);
+
+      const totalEntries = memberIds.length
+        ? await EntryIdol.count({
+            where: { idolId: { [Op.in]: memberIds } },
+          })
+        : 0;
+
+      let topIdol = null;
+      if (memberIds.length) {
+        const counts = await EntryIdol.findAll({
+          where: { idolId: { [Op.in]: memberIds } },
+          attributes: ["idolId", [fn("COUNT", col("idolId")), "count"]],
+          group: ["idolId"],
+          order: [[literal("count"), "DESC"]],
+          limit: 1,
+          raw: true,
+        });
+        if (counts.length) {
+          const topIdolData = group.Idols.find(
+            (i) => i.id === counts[0].idolId,
+          );
+          topIdol = topIdolData
+            ? { ...topIdolData.toJSON(), entryCount: Number(counts[0].count) }
+            : null;
+        }
+      }
+
+      res
+        .status(200)
+        .json({ group: group.toJSON(), stats: { totalEntries, topIdol } });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getAll(req, res, next) {
     try {
       const groups = await Group.findAll({
