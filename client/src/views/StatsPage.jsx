@@ -263,7 +263,7 @@ export default function StatsPage() {
           <div className="stats-two-col">
             {data.thoughtBreakdown.length > 0 && (
               <div className="stats-section">
-                <h2 className="stats-section-title">What you thought about</h2>
+                <h2 className="stats-section-title">Where you came the most</h2>
                 <BarList items={data.thoughtBreakdown} />
               </div>
             )}

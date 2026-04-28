@@ -244,7 +244,7 @@ export default function IdolPage() {
 
           {stats?.topThoughts.length > 0 && (
             <div className="idol-tags-row">
-              <span className="idol-tags-label">You often think about</span>
+              <span className="idol-tags-label">You often came</span>
               <div className="idol-tags">
                 {stats.topThoughts.map(([tag, count]) => (
                   <span key={tag} className="idol-tag">
@@ -344,7 +344,7 @@ export default function IdolPage() {
                     t.idolIds?.includes(Number(id)) || t.idolIds?.length === 0,
                 ).length > 0 && (
                   <div className="entry-card-row">
-                    <span className="entry-card-row-label">Thought about</span>
+                    <span className="entry-card-row-label">Came</span>
                     <div className="idol-tags">
                       {entry.EntryThoughts.filter(
                         (t) =>

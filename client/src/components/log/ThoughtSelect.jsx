@@ -74,13 +74,17 @@ export default function ThoughtSelect({ thoughts, onChange, idolItems }) {
     if (!thought) return null;
 
     const isAll = thought.idolIds === "all";
+    const allActive =
+      isAll ||
+      (Array.isArray(thought.idolIds) &&
+        thought.idolIds.length === selectedIdols.length);
     const count = selectedIdols.length;
 
     return (
       <div className="thought-idol-picker">
         <button
           type="button"
-          className={`thought-idol-option${isAll ? " --active" : ""}`}
+          className={`thought-idol-option${allActive ? " --active" : ""}`}
           onClick={() => setIdolIds(tag, "all")}
         >
           {count === 2 ? "Both of them" : `All ${count} of them`}
@@ -96,7 +100,28 @@ export default function ThoughtSelect({ thoughts, onChange, idolItems }) {
               key={idol.itemId}
               type="button"
               className={`thought-idol-option${active ? " --active" : ""}`}
-              onClick={() => setIdolIds(tag, [idolKey])}
+              onClick={() => {
+                if (isAll) {
+                  // Was "all" → click one idol → deselect only that one
+                  const remaining = selectedIdols
+                    .map((i) => (i.id !== null ? i.id : `new:${i.itemId}`))
+                    .filter((k) => k !== idolKey);
+                  setIdolIds(tag, remaining.length > 0 ? remaining : "all");
+                } else {
+                  const current = Array.isArray(thought.idolIds)
+                    ? thought.idolIds
+                    : [];
+                  let next;
+                  if (current.includes(idolKey)) {
+                    // Deselect — keep at least one selected
+                    next = current.filter((k) => k !== idolKey);
+                    if (next.length === 0) return; // don't allow zero selection
+                  } else {
+                    next = [...current, idolKey];
+                  }
+                  setIdolIds(tag, next);
+                }
+              }}
             >
               {cf(idol.name)}
             </button>
